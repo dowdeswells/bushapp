@@ -36,3 +36,8 @@ steps:
   displayName: 'Zip Up bushApp frontend Files'
   inputs:
     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/bushApp'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/bushApp' 
+    artifactName: 'bushApp' 
