@@ -24,3 +24,15 @@ steps:
     ng build --prod
   displayName: Install dependencies and build
   workingDirectory: bushApp
+
+- task: CopyFiles@2
+  displayName: 'Copy Files'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/bushApp/dist'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/bushApp'
+    CleanTargetFolder: true
+
+- task: ArchiveFiles@2
+  displayName: 'Zip Up bushApp frontend Files'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/bushApp'
