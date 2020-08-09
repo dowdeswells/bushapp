@@ -55,7 +55,7 @@ steps:
   inputs:
     azureSubscription: 'bushapp-aus-east'
     scriptType: 'pscore'
-    inlineScript: |
-      az storage blob upload-batch — account-name bushapp account-key /U/3AJKTDVVsb9zj9CncL+tj7doW4RRM5Nkk5Wqr2sHIr7RBTq8sD2p2yITv/xoxxl4FdF25zqr6JtPfb4ntRQ== — destination ‘$web’ — source $(Build.SourcesDirectory)/bushApp/dist
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az storage blob upload-batch — account-name bushapp account-key /U/3AJKTDVVsb9zj9CncL+tj7doW4RRM5Nkk5Wqr2sHIr7RBTq8sD2p2yITv/xoxxl4FdF25zqr6JtPfb4ntRQ== — destination ‘$web’ — source $(Build.SourcesDirectory)/bushApp/dist'
 
 
