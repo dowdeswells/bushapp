@@ -40,4 +40,13 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)/bushApp' 
-    artifactName: 'bushApp' 
+    artifactName: 'bushApp'
+
+- task: AzureCLI@2
+  displayName: Copy bushApp to blob storage
+  inputs:
+    azureSubscription: <Name of the Azure Resource Manager service connection>
+    scriptType: 'pscore'
+    scriptLocation: inlineScript
+    inlineScript: |
+      az storage blob upload-batch — account-name STORAGE_ACCOUNT_NAME account-key STORAGE_ACCOUNT_KEY — destination ‘$web’ — source ./
