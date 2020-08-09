@@ -49,3 +49,12 @@ steps:
       # Write your commands here
       
       ls '$(Build.ArtifactStagingDirectory)/bushApp/bushApp'
+
+- task: AzureCLI@2
+  displayName: Copy bushApp to blob storage
+  inputs:
+    azureSubscription: Visual Studio Enterprise Subscription(ee4309f4-7551-411b-8001-6c0a0dd91750)
+    scriptType: 'pscore'
+    scriptLocation: inlineScript
+    inlineScript: |
+      az storage blob upload-batch — account-name bushstorageauseast account-key epvWcHdMI/vIhT+AB9dqR6c+/mFMpsQQBSMVc9mro9SHIQQ2Yl+etdgmZdJXNqNHpt32uo9m9jLTCeYGqTtvCg== — destination ‘$web’ — source $(Build.SourcesDirectory)/bushApp/dist
