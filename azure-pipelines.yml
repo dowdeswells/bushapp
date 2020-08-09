@@ -48,4 +48,4 @@ steps:
     script: |
       # Write your commands here
       
-      ls '$(Build.ArtifactStagingDirectory)/bushApp'
+      ls '$(Build.ArtifactStagingDirectory)/bushApp/bushApp'
