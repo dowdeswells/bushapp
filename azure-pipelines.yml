@@ -47,8 +47,26 @@ steps:
     targetType: 'inline'
     script: |
       # Write your commands here
-      
       ls '$(Build.ArtifactStagingDirectory)/bushApp/bushApp'
+
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'bushapp-aus-east'
+    subscriptionId: '307e5a26-2005-49e7-8de1-ed32008bf357'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'bushapp-aus-east'
+    location: 'Australia East'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)/arm/azuredeploy.json'
+    csmParametersFile: '$(Build.SourcesDirectory)/arm/azuredeploy.parameters.json'
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'armTemplateOutputs'
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: 'env | sort'
 
 - task: AzureCLI@2
   displayName: Copy bushApp to blob storage
