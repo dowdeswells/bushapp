@@ -103,6 +103,14 @@ steps:
     Convert-ArmOutputToPsObject -ArmOutputString '$(armTemplateOutputs)' -Verbose
   displayName: "Parsing outputs from ARM deployment to pipeline variables"
 
+- task: AzureCLI@2
+  displayName: Enable Static Website on Blob Storage
+  inputs:
+    azureSubscription: 'bushapp-aus-east'
+    scriptType: 'pscore'
+    scriptLocation: inlineScript
+    inlineScript: |
+      az storage blob service-properties update --account-name '$(ArmOutputs.storage-account-name)' --static-website
 
 - task: AzureCLI@2
   displayName: Copy bushApp to blob storage
