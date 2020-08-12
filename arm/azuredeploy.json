@@ -100,7 +100,7 @@
         },
         "storage-account-key": {
             "type": "string",
-            "value": "[reference(parameters('storageAccounts_bushapp_name')).primaryMasterKey]"
+            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_bushapp_name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
         }
     }
 }
