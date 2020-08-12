@@ -68,6 +68,41 @@ steps:
     targetType: 'inline'
     script: 'env | sort'
 
+- powershell: |
+    function Convert-ArmOutputToPsObject {
+      param (
+        [Parameter(Mandatory=$true)]
+        [string]
+        $ArmOutputString
+      )
+
+      if ($PSBoundParameters['Verbose']) {
+        Write-Host "Arm output json is:"
+        Write-Host $ArmOutputString
+      }
+
+      $armOutputObj = $ArmOutputString | ConvertFrom-Json
+
+      $armOutputObj.PSObject.Properties | ForEach-Object {
+          $type = ($_.value.type).ToLower()
+          $keyname = "ArmOutputs.$($_.name)"
+          $value = $_.value.value
+
+          if ($type -eq "securestring") {
+              Write-Host "##vso[task.setvariable variable=$keyname;issecret=true]$value"
+              Write-Host "Added Azure DevOps secret variable '$keyname' ('$type')"
+          } elseif ($type -eq "string") {
+              Write-Host "##vso[task.setvariable variable=$keyname]$value"
+              Write-Host "Added Azure DevOps variable '$keyname' ('$type') with value '$value'"
+          } else {
+              Throw "Type '$type' is not supported for '$keyname'"
+          }
+      }
+    }
+
+    Convert-ArmOutputToPsObject -ArmOutputString '$(armTemplateOutputs)' -Verbose
+  displayName: "Parsing outputs from ARM deployment to pipeline variables"
+
 - task: AzureCLI@2
   displayName: Copy bushApp to blob storage
   inputs:
@@ -75,6 +110,6 @@ steps:
     scriptType: 'pscore'
     scriptLocation: inlineScript
     inlineScript: |
-      az storage blob upload-batch --account-name '$(armTemplateOutputs.storage-account-name)' --account-key '$(armTemplateOutputs.storage-account-key)'  --destination ‘$web’ --source $(Build.SourcesDirectory)/bushApp/dist/bushApp
+      az storage blob upload-batch --account-name '$(storage-account-name)' --account-key '$(storage-account-key)'  --destination ‘$web’ --source $(Build.SourcesDirectory)/bushApp/dist/bushApp
 
 
