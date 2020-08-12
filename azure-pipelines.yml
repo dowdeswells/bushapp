@@ -110,6 +110,6 @@ steps:
     scriptType: 'pscore'
     scriptLocation: inlineScript
     inlineScript: |
-      az storage blob upload-batch --account-name '$(storage-account-name)' --account-key '$(storage-account-key)'  --destination ‘$web’ --source $(Build.SourcesDirectory)/bushApp/dist/bushApp
+      az storage blob upload-batch --account-name '$(ArmOutputs.storage-account-name)' --account-key '$(ArmOutputs.storage-account-key)'  --destination ‘$web’ --source $(Build.SourcesDirectory)/bushApp/dist/bushApp
 
 
