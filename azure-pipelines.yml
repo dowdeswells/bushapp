@@ -75,6 +75,6 @@ steps:
     scriptType: 'pscore'
     scriptLocation: inlineScript
     inlineScript: |
-      az storage blob upload-batch --account-name bushapp --account-key /U/3AJKTDVVsb9zj9CncL+tj7doW4RRM5Nkk5Wqr2sHIr7RBTq8sD2p2yITv/xoxxl4FdF25zqr6JtPfb4ntRQ==  --destination ‘$web’ --source $(Build.SourcesDirectory)/bushApp/dist/bushApp
+      az storage blob upload-batch --account-name '$(armTemplateOutputs.storage-account-name)' --account-key '$(armTemplateOutputs.storage-account-key)'  --destination ‘$web’ --source $(Build.SourcesDirectory)/bushApp/dist/bushApp
 
 
