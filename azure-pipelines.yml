@@ -103,6 +103,7 @@ steps:
     Convert-ArmOutputToPsObject -ArmOutputString '$(armTemplateOutputs)' -Verbose
   displayName: "Parsing outputs from ARM deployment to pipeline variables"
 
+
 - task: AzureCLI@2
   displayName: Copy bushApp to blob storage
   inputs:
