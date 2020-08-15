@@ -33,7 +33,7 @@ stages:
       displayName: "Test"
       inputs:
         command: test
-        projects: '**/*tests/*.csproj'
+        projects: 'api/**/*tests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
 
     - task: DotNetCoreCLI@2
