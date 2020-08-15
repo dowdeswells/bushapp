@@ -1,3 +1,4 @@
+name: $(Build.DefinitionName)-$(BuildID)-$(date:yyyyMMdd)$(rev:.r)
 trigger:
   branches:
     include:
@@ -19,3 +20,4 @@ stages:
         command: test
         arguments: /p:CollectCoverage=true /p:Exclude="[xunit.*]*%2c[*]bushapp.api.Startup%2c[*]bushapp.api.Program" /p:CoverletOutputFormat=cobertura /p:Threshold=95 /p:ThresholdType=Line /p:verbosity=diag /p:nodereuse=false
         workingDirectory: 'bushapp.api.test'
+
