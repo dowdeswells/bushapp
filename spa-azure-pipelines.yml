@@ -11,7 +11,7 @@ trigger:
   paths:
       include:
       - ./bushApp/*
-      - ./azure-pipelines.yml
+      - ./spa-azure-pipelines.yml
 
 variables:
   System.Debug: true
