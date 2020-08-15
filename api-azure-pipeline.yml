@@ -16,7 +16,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-- stage: test and publish
+- stage: test_and_publish
   jobs:
   - job: test
     displayName: Run tests
