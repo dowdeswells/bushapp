@@ -32,13 +32,15 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: "Test"
       inputs:
+        workingDirectory: 'api/bushApp.api.test'
         command: test
-        projects: 'api/**/*tests/*.csproj'
+        projects: '*.csproj'
         arguments: '--configuration $(buildConfiguration)'
 
     - task: DotNetCoreCLI@2
       displayName: "Publish"
       inputs:
+        workingDirectory: 'api/bushApp.api'
         command: 'publish'
         publishWebProjects: true
         arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
