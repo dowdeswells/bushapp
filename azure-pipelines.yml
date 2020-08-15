@@ -8,10 +8,10 @@ trigger:
   branches:
     include:
     - master
-paths:
-    include:
-    - ./bushApp/*
-    - ./azure-pipelines.yml
+  paths:
+      include:
+      - ./bushApp/*
+      - ./azure-pipelines.yml
 
 variables:
   System.Debug: true
