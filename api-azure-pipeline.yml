@@ -8,26 +8,39 @@ trigger:
       - ./api/*
       - ./api-azure-pipelines.yml
 
+variables:
+  System.Debug: true
+  buildConfiguration: 'Release'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
 stages:
-- stage: test
+- stage: test and publish
   jobs:
   - job: test
     displayName: Run tests
     steps:
-    - task: DotNetCoreCLI@2
-      displayName: build bushApp.api project
+    - task: UseDotNet@2 
+      displayName: ".NET Core 3.1.x"
       inputs:
-        command: build
-        workingDirectory: 'bushApp.api'
+        version: '3.1.x'
+        packageType: sdk
+    - script: dotnet build --configuration $(buildConfiguration)
+      displayName: 'dotnet build $(buildConfiguration)'
+
     - task: DotNetCoreCLI@2
-      displayName: Build bushApp.api.test project 
-      inputs:
-        command: build
-        workingDirectory: 'bushApp.api.test'
-    - task: DotNetCoreCLI@2
-      displayName: Run unit tests
+      displayName: "Test"
       inputs:
         command: test
-        arguments: /p:CollectCoverage=true /p:Exclude="[xunit.*]*%2c[*]bushapp.api.Startup%2c[*]bushapp.api.Program" /p:CoverletOutputFormat=cobertura /p:Threshold=95 /p:ThresholdType=Line /p:verbosity=diag /p:nodereuse=false
-        workingDirectory: 'bushapp.api.test'
+        projects: '**/*tests/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      displayName: "Publish"
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: true
 
