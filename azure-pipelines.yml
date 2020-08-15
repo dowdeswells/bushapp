@@ -117,7 +117,7 @@ steps:
     scriptType: 'pscore'
     scriptLocation: inlineScript
     inlineScript: |
-      az storage blob service-properties update --account-name '$(ArmOutputs.storage-account-name)' --static-website
+      az storage blob service-properties update --account-name '$(ArmOutputs.storage-account-name)' --index-document index.html --static-website true
 
 - task: AzureCLI@2
   displayName: Copy bushApp to blob storage
@@ -126,6 +126,6 @@ steps:
     scriptType: 'pscore'
     scriptLocation: inlineScript
     inlineScript: |
-      az storage blob upload-batch --account-name '$(ArmOutputs.storage-account-name)' --account-key '$(ArmOutputs.storage-account-key)'  --destination ‘$web’ --source $(Build.SourcesDirectory)/bushApp/dist/bushApp
+      az storage blob upload-batch --account-name '$(ArmOutputs.storage-account-name)'  --destination ‘$web’ --source $(Build.SourcesDirectory)/bushApp/dist/bushApp
 
 
