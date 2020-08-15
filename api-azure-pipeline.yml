@@ -15,6 +15,16 @@ stages:
     displayName: Run tests
     steps:
     - task: DotNetCoreCLI@2
+      displayName: build bushApp.api project
+      inputs:
+        command: build
+        workingDirectory: 'bushApp.api'
+    - task: DotNetCoreCLI@2
+      displayName: Build bushApp.api.test project 
+      inputs:
+        command: build
+        workingDirectory: 'bushApp.api.test'
+    - task: DotNetCoreCLI@2
       displayName: Run unit tests
       inputs:
         command: test
