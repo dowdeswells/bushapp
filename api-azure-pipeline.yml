@@ -36,7 +36,7 @@ stages:
       workingDirectory: 'api/bushApp.api'
       displayName: 'install local project dotnet tools'
 
-    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --host 'https://bushapp-api.azurewebsites.net'  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
+    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --serializeasv2 --host 'https://bushapp-api.azurewebsites.net'  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
       workingDirectory: 'api/bushApp.api'
       displayName: 'generate swagger.json'
 
