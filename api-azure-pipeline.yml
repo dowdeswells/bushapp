@@ -80,13 +80,7 @@ stages:
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          $apim = az apim show `
-            --resource-group 'bushapp-aus-east' `
-            --name 'bushapp-apim'
-
-          echo $apim
-
-          $api = az apim api import `
+          az apim api import `
             --resource-group 'bushapp-aus-east' `
             --service-name 'bushapp-apim' `
             --api-id 'bushapp-api' `
