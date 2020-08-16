@@ -35,7 +35,7 @@ stages:
       workingDirectory: 'api/bushApp.api'
       displayName: 'install local project dotnet tools'
 
-    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --host https://localhost  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
+    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --host 'https://bushapp-api.azurewebsites.net'  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
       workingDirectory: 'api/bushApp.api'
       displayName: 'generate swagger.json'
 
@@ -71,3 +71,27 @@ stages:
         WebAppName: 'bushapp-api'
         packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
         RuntimeStack: 'DOTNETCORE|3.1'
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'bushapp-aus-east'
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          $apim = Get-AzureRmApiManagement `
+            -ResourceGroupName 'bushapp-aus-east' `
+            -Name 'bushapp-apim'
+
+          $apimContext = New-AzureRmApiManagementContext `
+            -ResourceGroupName $apim.ResourceGroupName `
+            -ServiceName $apim.Name
+
+          $api = Import-AzureRmApiManagementApi `
+            -Context $apimContext `
+            -ApiId 'bushapp-api' `
+            -Path 'bushapp' `
+            -SpecificationFormat 'Swagger' `
+            -SpecificationPath '$(Build.ArtifactStagingDirectory)/swagger.json'
+
+
+
