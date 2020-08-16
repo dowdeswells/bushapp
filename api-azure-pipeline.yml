@@ -53,3 +53,13 @@ stages:
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
         artifactName: 'bushApp.api' 
+
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'Deploy to linux Azure Web App'
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'bushapp-aus-east'
+        appType: 'webAppLinux'
+        WebAppName: 'bushapp-api'
+        packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+        RuntimeStack: 'DOTNETCORE|3.1'
