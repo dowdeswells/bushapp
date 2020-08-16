@@ -21,25 +21,6 @@ stages:
   - job: test
     displayName: Run tests
     steps:
-    - task: AzurePowerShell@5
-      inputs:
-        azureSubscription: 'bushapp-aus-east'
-        ScriptType: 'InlineScript'
-        Inline: |
-          $apim = Get-AzureRmApiManagement `
-            -ResourceGroupName 'bushapp-aus-east' `
-            -Name 'bushapp-apim'
-
-          $apimContext = New-AzureRmApiManagementContext `
-            -ResourceGroupName $apim.ResourceGroupName `
-            -ServiceName $apim.Name
-
-          $api = Import-AzureRmApiManagementApi `
-            -Context $apimContext `
-            -ApiId 'bushapp-api' `
-            -Path 'bushapp' `
-            -SpecificationFormat 'Swagger' `
-            -SpecificationPath '$(Build.ArtifactStagingDirectory)/swagger.json'
 
     - task: UseDotNet@2 
       displayName: ".NET Core 3.1.x"
@@ -92,3 +73,23 @@ stages:
         packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
         RuntimeStack: 'DOTNETCORE|3.1'
 
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'bushapp-aus-east'
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          $apim = az apim show `
+            --resource-group-name 'bushapp-aus-east' `
+            --name 'bushapp-apim'
+
+          echo $apim
+          
+          $api = az apim api import `
+            --resource-group $apim.ResourceGroupName `
+            --service-name $apim.Name `
+            --api-id 'bushapp-api' `
+            --path 'bushapp' `
+            --specification-format 'Swagger' `
+            --specification-path '$(Build.ArtifactStagingDirectory)/swagger.json'
