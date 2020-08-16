@@ -73,17 +73,24 @@ stages:
         packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
         RuntimeStack: 'DOTNETCORE|3.1'
 
-
-    - task: AzureCLI@2
+    - task: AzurePowerShell@5
       inputs:
         azureSubscription: 'bushapp-aus-east'
-        scriptType: 'pscore'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          az apim api import `
-            --resource-group 'bushapp-aus-east' `
-            --service-name 'bushapp-apim' `
-            --api-id 'bushapp-api' `
-            --path 'bushapp' `
-            --specification-format 'Swagger' `
-            --specification-path '$(Build.ArtifactStagingDirectory)/swagger.json'
+        ScriptType: 'InlineScript'
+        preferredAzurePowerShellVersion: '4.5.0'
+        pwsh: true
+        Inline: |
+          $apim = Get-AzureRmApiManagement `
+            -ResourceGroupName 'bushapp-aus-east' `
+            -Name 'bushapp-apim'
+
+          $apimContext = New-AzureRmApiManagementContext `
+            -ResourceGroupName $apim.ResourceGroupName `
+            -ServiceName $apim.Name
+
+          $api = Import-AzureRmApiManagementApi `
+            -Context $apimContext `
+            -ApiId 'bushapp-api' `
+            -Path 'bushapp' `
+            -SpecificationFormat 'Swagger' `
+            -SpecificationPath '$(Build.ArtifactStagingDirectory)/swagger.json'        
