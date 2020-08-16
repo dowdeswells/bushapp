@@ -80,15 +80,15 @@ stages:
         azurePowerShellVersion: latestVersion
         pwsh: true
         Inline: |
-          $apim = Get-AzureRmApiManagement `
+          $apim = Get-AzApiManagement `
             -ResourceGroupName 'bushapp-aus-east' `
             -Name 'bushapp-apim'
 
-          $apimContext = New-AzureRmApiManagementContext `
+          $apimContext = New-AzApiManagementContext `
             -ResourceGroupName $apim.ResourceGroupName `
             -ServiceName $apim.Name
 
-          $api = Import-AzureRmApiManagementApi `
+          $api = Import-AzApiManagementApi `
             -Context $apimContext `
             -ApiId 'bushapp-api' `
             -Path 'bushapp' `
