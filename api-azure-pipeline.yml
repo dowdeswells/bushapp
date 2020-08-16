@@ -87,8 +87,8 @@ stages:
           echo $apim
 
           $api = az apim api import `
-            --resource-group $apim.ResourceGroupName `
-            --service-name $apim.Name `
+            --resource-group 'bushapp-aus-east' `
+            --service-name 'bushapp-apim' `
             --api-id 'bushapp-api' `
             --path 'bushapp' `
             --specification-format 'Swagger' `
