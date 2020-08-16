@@ -31,6 +31,10 @@ stages:
       workingDirectory: 'api'
       displayName: 'dotnet build $(buildConfiguration)'
 
+    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger/swagger.json' --host https://localhost  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
+      workingDirectory: 'api/bushApp.api'
+      displayName: 'generate swagger.json'
+
     - task: DotNetCoreCLI@2
       displayName: "Test"
       inputs:
