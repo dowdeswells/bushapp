@@ -81,11 +81,11 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           $apim = az apim show `
-            --resource-group-name 'bushapp-aus-east' `
+            --resource-group 'bushapp-aus-east' `
             --name 'bushapp-apim'
 
           echo $apim
-          
+
           $api = az apim api import `
             --resource-group $apim.ResourceGroupName `
             --service-name $apim.Name `
