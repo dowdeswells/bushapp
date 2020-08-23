@@ -1,7 +1,7 @@
-# File: start.yml
+
 parameters:
 - name: azureSubscription 
-  type: string # data type is StepList
+  type: string 
   default: 'bushapp-aus-east'
 
 steps:
@@ -10,8 +10,8 @@ steps:
     targetType: 'inline'
     script: |
       # Write your commands here
-      echo '$(System.ArtifactsDirectory)'
-      ls '$(System.ArtifactsDirectory)'
+      echo '$(Pipeline.Workspace)/WebApp'
+      ls '$(Pipeline.Workspace)/WebApp'
   displayName: inner_ls
 
 - task: AzureRmWebAppDeployment@4
@@ -21,7 +21,7 @@ steps:
     azureSubscription: ${{ parameters.azureSubscription }}
     appType: 'webAppLinux'
     WebAppName: 'bushapp-api'
-    packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+    packageForLinux: '$(Pipeline.Workspace)/WebApp/**/*.zip'
     RuntimeStack: 'DOTNETCORE|3.1'
 
 - task: AzurePowerShell@5
@@ -45,4 +45,4 @@ steps:
         -ApiId 'bushapp-api' `
         -Path 'bushapp' `
         -SpecificationFormat 'Swagger' `
-        -SpecificationPath '$(Build.ArtifactStagingDirectory)/swagger.json'        
+        -SpecificationPath '$(Pipeline.Workspace)/WebApp/swagger.json'        
