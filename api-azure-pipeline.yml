@@ -71,5 +71,5 @@ stages:
     parameters:
       azureSubscription: '$(subscription)'
       resourceGroupPrefix: 'bushapp-rg'
-      envSuffix: 'dev'
+      envSuffix: 'dev1'
 
