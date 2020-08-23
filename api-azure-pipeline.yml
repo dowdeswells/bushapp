@@ -70,35 +70,4 @@ stages:
   jobs:
   - job: Deploy
     steps:
-    - task: AzureRmWebAppDeployment@4
-      displayName: 'Deploy to linux Azure Web App'
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'bushapp-aus-east'
-        appType: 'webAppLinux'
-        WebAppName: 'bushapp-api'
-        packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
-        RuntimeStack: 'DOTNETCORE|3.1'
-
-    - task: AzurePowerShell@5
-      displayName: 'Import api into apim'
-      inputs:
-        azureSubscription: 'bushapp-aus-east'
-        ScriptType: 'InlineScript'
-        azurePowerShellVersion: latestVersion
-        pwsh: true
-        Inline: |
-          $apim = Get-AzApiManagement `
-            -ResourceGroupName 'bushapp-aus-east' `
-            -Name 'bushapp-apim'
-
-          $apimContext = New-AzApiManagementContext `
-            -ResourceGroupName $apim.ResourceGroupName `
-            -ServiceName $apim.Name
-
-          $api = Import-AzApiManagementApi `
-            -Context $apimContext `
-            -ApiId 'bushapp-api' `
-            -Path 'bushapp' `
-            -SpecificationFormat 'Swagger' `
-            -SpecificationPath '$(Build.ArtifactStagingDirectory)/swagger.json'        
+    - template: templates/deploy-api.yml
