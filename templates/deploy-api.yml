@@ -109,7 +109,7 @@ jobs:
       pwsh: true
       Inline: |
         $apim = Get-AzApiManagement `
-          -ResourceGroupName '${{ parameters.resourceGroup }}' `
+          -ResourceGroupName '${{ variables.resourceGroupName }}' `
           -Name 'bushapp-apim'
 
         $apimContext = New-AzApiManagementContext `
