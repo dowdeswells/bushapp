@@ -67,10 +67,9 @@ stages:
   - build_test_and_publish
 
   jobs:
-  - job: Deploy
-    steps:
-    - template: templates/deploy-api.yml
-      parameters:
-        azureSubscription: '$(subscription)'
-        resourceGroup: 'bushapp-aus-east'
+  - template: templates/deploy-api.yml
+    parameters:
+      azureSubscription: '$(subscription)'
+      resourceGroupPrefix: 'bushapp-rg'
+      envSuffix: 'dev'
 
