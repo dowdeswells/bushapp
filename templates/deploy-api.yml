@@ -47,7 +47,7 @@ jobs:
       csmFile: '$(Pipeline.Workspace)/ArmTemplates/bushapp-api-template.json'
       csmParametersFile: '$(Pipeline.Workspace)/ArmTemplates/bushapp-api-template.parameters.json'
       deploymentMode: 'Incremental'
-      deploymentOutputs: 'armTemplateOutputs'
+      deploymentOutputs: 'apiTemplateOutputs'
       overrideParameters: '-sites_bushapp_api_name "${{ variables.apiName }}" -serverfarms_bushapp_api_plan_externalid "${{ variables.apiId }}"'
 
   - task: AzurePowerShell@4
@@ -56,7 +56,7 @@ jobs:
       azureSubscription: '${{ parameters.azureSubscription }}'
       scriptType: 'InlineScript'
       Inline: |
-        $outputs=ConvertFrom-Json '$(armTemplateOutputs)'
+        $outputs=ConvertFrom-Json '$(apiTemplateOutputs)'
         Write-Host "##vso[task.setvariable variable=templateOutputs;]$outputs"
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
