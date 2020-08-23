@@ -5,6 +5,10 @@ parameters:
   default: 'bushapp-aus-east'
 
 steps:
+
+- download: current
+  artifact: WebApp
+
 - task: Bash@3
   inputs:
     targetType: 'inline'
