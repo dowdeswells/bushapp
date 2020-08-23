@@ -2,7 +2,8 @@
 parameters:
 - name: azureSubscription 
   type: string 
-  default: 'bushapp-aus-east'
+- name: resourceGroup
+  type: string
 
 steps:
 
@@ -37,7 +38,7 @@ steps:
     pwsh: true
     Inline: |
       $apim = Get-AzApiManagement `
-        -ResourceGroupName 'bushapp-aus-east' `
+        -ResourceGroupName '${{ parameters.resourceGroup }}' `
         -Name 'bushapp-apim'
 
       $apimContext = New-AzApiManagementContext `
@@ -49,4 +50,7 @@ steps:
         -ApiId 'bushapp-api' `
         -Path 'bushapp' `
         -SpecificationFormat 'Swagger' `
-        -SpecificationPath '$(Pipeline.Workspace)/WebApp/swagger.json'        
+        -SpecificationPath '$(Pipeline.Workspace)/WebApp/swagger.json'
+
+
+

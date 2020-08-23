@@ -11,6 +11,7 @@ trigger:
 variables:
   System.Debug: true
   buildConfiguration: 'Release'
+  subscription: 'bushapp-subscription'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -66,21 +67,10 @@ stages:
   - build_test_and_publish
 
   jobs:
-  - job: debug
-    steps:
-    
-    - download: current
-      artifact: WebApp
-
-    - task: Bash@3
-      inputs:
-        targetType: 'inline'
-        script: |
-          # Write your commands here
-          echo '$(Pipeline.Workspace)/WebApp'
-          ls '$(Pipeline.Workspace)/WebApp'
-      displayName: outer_ls
-
   - job: Deploy
     steps:
     - template: templates/deploy-api.yml
+      parameters:
+        azureSubscription: '$(subscription)'
+        resourceGroup: 'bushapp-aus-east'
+
