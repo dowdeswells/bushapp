@@ -18,6 +18,8 @@ jobs:
     value: 'bushapp-api-${{ parameters.envSuffix }}'
   - name: apiId
     value: '/subscriptions/307e5a26-2005-49e7-8de1-ed32008bf357/resourceGroups/${{ parameters.resourceGroupPrefix }}-${{ parameters.envSuffix }}/providers/Microsoft.Web/serverfarms/bushapp-api-${{ parameters.envSuffix }}-plan'
+  - name: templateLocation
+    value: '$(Pipeline.Workspace)/ArmTemplates/bushapp-api-template.json'
 
   steps:
 
@@ -33,6 +35,7 @@ jobs:
       script: |
         # Write your commands here
         ls '$(Pipeline.Workspace)/ArmTemplates'
+        ls '${{ variables.templateLocation }}'
     displayName: display variables 
 
   - task: AzureResourceManagerTemplateDeployment@3
