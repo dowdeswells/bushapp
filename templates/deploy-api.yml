@@ -5,6 +5,9 @@ parameters:
   default: 'bushapp-aus-east'
 
 steps:
+- script: ls '$(System.ArtifactsDirectory)'
+  displayName: inner_ls
+  
 - task: AzureRmWebAppDeployment@4
   displayName: 'Deploy to linux Azure Web App'
   inputs:
