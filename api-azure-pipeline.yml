@@ -71,7 +71,8 @@ stages:
   - job: debug
     steps:
     - script: ls '$(System.ArtifactsDirectory)'
-    
+      displayName: outer_ls
+
   - job: Deploy
     steps:
     - template: templates/deploy-api.yml
