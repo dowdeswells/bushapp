@@ -68,6 +68,10 @@ stages:
   - build_test_and_publish
 
   jobs:
+  - job: debug
+    steps:
+    - script: ls '$(System.ArtifactsDirectory)'
+    
   - job: Deploy
     steps:
     - template: templates/deploy-api.yml
