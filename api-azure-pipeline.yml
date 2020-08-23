@@ -16,7 +16,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-- stage: test_and_publish
+- stage: build_test_and_publish
   jobs:
   - job: test
     displayName: Run tests
@@ -63,6 +63,13 @@ stages:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
         artifactName: 'bushApp.api' 
 
+- stage: deploy_to_test
+  dependsOn:
+  - build_test_and_publish
+
+  jobs:
+  - job: Deploy
+    steps:
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy to linux Azure Web App'
       inputs:
