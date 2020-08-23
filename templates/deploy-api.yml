@@ -48,7 +48,7 @@ jobs:
       csmParametersFile: '$(Pipeline.Workspace)/ArmTemplates/bushapp-api-template.parameters.json'
       deploymentMode: 'Incremental'
       deploymentOutputs: 'armTemplateOutputs'
-      overrideParameters: '-sites_bushapp_api_name ${{ variables.apiName }} -serverfarms_bushapp_api_plan_externalid ${{ variables.apiId }}'
+      overrideParameters: '-sites_bushapp_api_name "${{ variables.apiName }}" -serverfarms_bushapp_api_plan_externalid "${{ variables.apiId }}"'
 
   - task: AzurePowerShell@4
     displayName: Convert template outputs to variable
