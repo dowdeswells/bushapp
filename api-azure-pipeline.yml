@@ -16,11 +16,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-- stage: test_and_publish
+- stage: build_test_and_publish
   jobs:
   - job: test
     displayName: Run tests
     steps:
+
     - task: UseDotNet@2 
       displayName: ".NET Core 3.1.x"
       inputs:
@@ -30,6 +31,14 @@ stages:
     - script: dotnet build --configuration $(buildConfiguration)
       workingDirectory: 'api'
       displayName: 'dotnet build $(buildConfiguration)'
+
+    - script: dotnet tool restore
+      workingDirectory: 'api/bushApp.api'
+      displayName: 'install local project dotnet tools'
+
+    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --serializeasv2 --host 'https://bushapp-api.azurewebsites.net'  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
+      workingDirectory: 'api/bushApp.api'
+      displayName: 'generate swagger.json'
 
     - task: DotNetCoreCLI@2
       displayName: "Test"
@@ -54,6 +63,13 @@ stages:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
         artifactName: 'bushApp.api' 
 
+- stage: deploy_to_test
+  dependsOn:
+  - build_test_and_publish
+
+  jobs:
+  - job: Deploy
+    steps:
     - task: AzureRmWebAppDeployment@4
       displayName: 'Deploy to linux Azure Web App'
       inputs:
@@ -63,3 +79,26 @@ stages:
         WebAppName: 'bushapp-api'
         packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
         RuntimeStack: 'DOTNETCORE|3.1'
+
+    - task: AzurePowerShell@5
+      displayName: 'Import api into apim'
+      inputs:
+        azureSubscription: 'bushapp-aus-east'
+        ScriptType: 'InlineScript'
+        azurePowerShellVersion: latestVersion
+        pwsh: true
+        Inline: |
+          $apim = Get-AzApiManagement `
+            -ResourceGroupName 'bushapp-aus-east' `
+            -Name 'bushapp-apim'
+
+          $apimContext = New-AzApiManagementContext `
+            -ResourceGroupName $apim.ResourceGroupName `
+            -ServiceName $apim.Name
+
+          $api = Import-AzApiManagementApi `
+            -Context $apimContext `
+            -ApiId 'bushapp-api' `
+            -Path 'bushapp' `
+            -SpecificationFormat 'Swagger' `
+            -SpecificationPath '$(Build.ArtifactStagingDirectory)/swagger.json'        
