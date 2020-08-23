@@ -63,6 +63,15 @@ stages:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
         artifactName: 'bushApp.api' 
 
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your commands here
+          echo '$(System.ArtifactsDirectory)'
+          ls '$(System.ArtifactsDirectory)'
+      displayName: build_ls        
+
 - stage: deploy_to_test
   dependsOn:
   - build_test_and_publish
