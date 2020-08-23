@@ -70,7 +70,12 @@ stages:
   jobs:
   - job: debug
     steps:
-    - script: ls '$(System.ArtifactsDirectory)'
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your commands here
+          ls '$(System.ArtifactsDirectory)/bushApp'
       displayName: outer_ls
 
   - job: Deploy
