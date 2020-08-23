@@ -10,7 +10,7 @@ steps:
     targetType: 'inline'
     script: |
       # Write your commands here
-      echo '$(System.ArtifactsDirectory)''
+      echo '$(System.ArtifactsDirectory)'
       ls '$(System.ArtifactsDirectory)'
   displayName: inner_ls
 
