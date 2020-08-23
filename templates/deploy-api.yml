@@ -2,8 +2,18 @@
 parameters:
 - name: azureSubscription 
   type: string 
-- name: resourceGroup
+- name: resourceGroupPrefix
   type: string
+- name: envSuffix
+  type: string
+
+variables:
+- name: resourceGroupName
+  value: '${{ parameters.resourceGroupPrefix }}-${{ parameters.envSuffix }}'
+- name: apiName
+  value: 'bushapp-api-${{ parameters.envSuffix }}'
+- name: apiId
+  value: '/subscriptions/307e5a26-2005-49e7-8de1-ed32008bf357/resourceGroups/${{ parameters.resourceGroupPrefix }}-${{ parameters.envSuffix }}/providers/Microsoft.Web/serverfarms/bushapp-api-${{ parameters.envSuffix }}-plan'
 
 steps:
 
@@ -15,9 +25,66 @@ steps:
     targetType: 'inline'
     script: |
       # Write your commands here
-      echo '$(Pipeline.Workspace)/WebApp'
-      ls '$(Pipeline.Workspace)/WebApp'
-  displayName: inner_ls
+      echo '${{ variables.resourceGroupName }}'
+      echo '${{ variables.apiName }}'
+      echo '${{ variables.apiId }}'
+  displayName: display variables 
+
+# Azure resource group deployment
+# Deploy an Azure Resource Manager (ARM) template to a resource group and manage virtual machines
+- task: AzureResourceGroupDeployment@2
+  inputs:
+    azureSubscription: '${{ parameters.azureSubscription }}'
+    action: 'Create Or Update Resource Group' 
+    resourceGroupName: '${{ variables.resourceGroupName }}'
+    location: 'Australia East'
+    deploymentMode: 'Incremental'
+    #enableDeploymentPrerequisites: 'None' # Optional. Options: none, configureVMwithWinRM, configureVMWithDGAgent
+    #teamServicesConnection: # Required when enableDeploymentPrerequisites == ConfigureVMWithDGAgent
+    #teamProject: # Required when enableDeploymentPrerequisites == ConfigureVMWithDGAgent
+    #deploymentGroupName: # Required when enableDeploymentPrerequisites == ConfigureVMWithDGAgent
+    #copyAzureVMTags: true # Optional
+    #runAgentServiceAsUser: # Optional
+    #userName: # Required when enableDeploymentPrerequisites == ConfigureVMWithDGAgent && RunAgentServiceAsUser == True
+    #password: # Optional
+    #outputVariable: # Optional
+    #deploymentName: # Optional
+    #deploymentOutputs: # Optional
+    #addSpnToEnvironment: false # Optional
+
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: '${{ parameters.azureSubscription }}'
+    subscriptionId: '307e5a26-2005-49e7-8de1-ed32008bf357'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: '${{ variables.resourceGroupName }}'
+    location: 'Australia East'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)/arm/bushapp-api-template.json'
+    csmParametersFile: '$(Build.SourcesDirectory)/arm/bushapp-api-template.parameters.json'
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'armTemplateOutputs'
+    overrideParameters: '-sites_bushapp_api_name ${{ variables.apiName }} -serverfarms_bushapp_api_plan_externalid ${{ variables.apiId }}'
+
+- task: AzurePowerShell@4
+  displayName: Convert template outputs to variable
+  inputs:
+    azureSubscription: '${{ parameters.azureSubscription }}'
+    scriptType: 'InlineScript'
+    Inline: |
+      $outputs=ConvertFrom-Json '$(armTemplateOutputs)'
+      Write-Host "##vso[task.setvariable variable=templateOutputs;]$outputs"
+    azurePowerShellVersion: 'latestVersion'
+    pwsh: true
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your commands here
+      echo '$(templateOutputs)'
+  displayName: display arm template variables 
 
 - task: AzureRmWebAppDeployment@4
   displayName: 'Deploy to linux Azure Web App'
