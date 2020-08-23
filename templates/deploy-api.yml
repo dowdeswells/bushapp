@@ -10,7 +10,8 @@ steps:
     targetType: 'inline'
     script: |
       # Write your commands here
-      ls '$(System.ArtifactsDirectory)/bushApp'
+      echo '$(System.ArtifactsDirectory)''
+      ls '$(System.ArtifactsDirectory)'
   displayName: inner_ls
 
 - task: AzureRmWebAppDeployment@4
