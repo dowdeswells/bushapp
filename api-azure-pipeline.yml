@@ -59,8 +59,12 @@ stages:
         zipAfterPublish: true
 
     - publish: '$(Build.ArtifactStagingDirectory)'
-      displayName: "Upload Artifacts"
+      displayName: "Upload built api"
       artifact: WebApp  
+      
+    - publish: '$(Build.SourcesDirectory)/arm'
+      displayName: "Upload arm templates"
+      artifact: ArmTemplates  
 
 - stage: deploy_to_test
   dependsOn:

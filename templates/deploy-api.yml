@@ -24,6 +24,9 @@ jobs:
   - download: current
     artifact: WebApp
 
+  - download: current
+    artifact: ArmTemplates
+
   - task: Bash@3
     inputs:
       targetType: 'inline'
@@ -34,8 +37,6 @@ jobs:
         echo '${{ variables.apiId }}'
     displayName: display variables 
 
-
-
   - task: AzureResourceManagerTemplateDeployment@3
     inputs:
       deploymentScope: 'Resource Group'
@@ -45,8 +46,8 @@ jobs:
       resourceGroupName: '${{ variables.resourceGroupName }}'
       location: 'Australia East'
       templateLocation: 'Linked artifact'
-      csmFile: '$(Build.SourcesDirectory)/arm/bushapp-api-template.json'
-      csmParametersFile: '$(Build.SourcesDirectory)/arm/bushapp-api-template.parameters.json'
+      csmFile: '$(Pipeline.Workspace)/ArmTemplates/bushapp-api-template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/ArmTemplates/bushapp-api-template.parameters.json'
       deploymentMode: 'Incremental'
       deploymentOutputs: 'armTemplateOutputs'
       overrideParameters: '-sites_bushapp_api_name ${{ variables.apiName }} -serverfarms_bushapp_api_plan_externalid ${{ variables.apiId }}'
