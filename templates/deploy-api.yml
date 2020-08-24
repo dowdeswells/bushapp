@@ -16,10 +16,8 @@ jobs:
     value: '${{ parameters.resourceGroupPrefix }}-${{ parameters.envSuffix }}'
   - name: apiName
     value: 'bushapp-api-${{ parameters.envSuffix }}'
-  - name: apiId
-    value: '/subscriptions/307e5a26-2005-49e7-8de1-ed32008bf357/resourceGroups/${{ parameters.resourceGroupPrefix }}-${{ parameters.envSuffix }}/providers/Microsoft.Web/serverfarms/bushapp-api-${{ parameters.envSuffix }}-plan'
   - name: templateLocation
-    value: '$(Pipeline.Workspace)/ArmTemplates/bushapp-api-template.json'
+    value: '$(Pipeline.Workspace)/ArmTemplates/api-plan-and-webapp.json'
 
   steps:
 
@@ -50,7 +48,7 @@ jobs:
       csmFile: '${{ variables.templateLocation }}'
       deploymentMode: 'Incremental'
       deploymentOutputs: 'apiTemplateOutputs'
-      overrideParameters: '-sites_bushapp_api_name "${{ variables.apiName }}" -serverfarms_bushapp_api_plan_externalid "${{ variables.apiId }}"'
+      overrideParameters: '-webAppName "${{ variables.apiName }}"'
 
   - task: AzurePowerShell@4
     displayName: Convert template outputs to variable
