@@ -1,4 +1,3 @@
-
 parameters:
 - name: azureSubscription 
   type: string 
@@ -6,7 +5,6 @@ parameters:
   type: string
 - name: envSuffix
   type: string
-
 
 
 jobs:
@@ -18,6 +16,10 @@ jobs:
     value: 'bushapp-api-${{ parameters.envSuffix }}'
   - name: templateLocation
     value: '$(Pipeline.Workspace)/ArmTemplates/api-plan-and-webapp.json'
+  - name: apimName
+    value: 'bushapp-apim-${{ parameters.envSuffix }}'
+  - name: apimTemplateLocation
+    value: '$(Pipeline.Workspace)/ArmTemplates/apim-template.json'
 
   steps:
 
@@ -33,10 +35,11 @@ jobs:
       script: |
         # Write your commands here
         ls '$(Pipeline.Workspace)/ArmTemplates'
-        ls '${{ variables.templateLocation }}'
+        ls '${{ variables.apimTemplateLocation }}'
     displayName: display variables 
 
   - task: AzureResourceManagerTemplateDeployment@3
+    displayName: 'Deploy Web App'
     inputs:
       deploymentScope: 'Resource Group'
       azureResourceManagerConnection: '${{ parameters.azureSubscription }}'
@@ -60,6 +63,21 @@ jobs:
       packageForLinux: '$(Pipeline.Workspace)/WebApp/**/*.zip'
       RuntimeStack: 'DOTNETCORE|3.1'
 
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: 'Deploy APIM'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: '${{ parameters.azureSubscription }}'
+      subscriptionId: '307e5a26-2005-49e7-8de1-ed32008bf357'
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: '${{ variables.resourceGroupName }}'
+      location: 'Australia East'
+      templateLocation: 'Linked artifact'
+      csmFile: '${{ variables.apimTemplateLocation }}'
+      deploymentMode: 'Incremental'
+      deploymentOutputs: 'apimTemplateOutputs'
+      overrideParameters: '-apimName "${{ variables.apimName }}" -publisherEmail "simon.dowdeswell@rockend.com.au" -publisherName "Simon Dowdeswell"'
+
   - task: AzurePowerShell@5
     displayName: 'Import api into apim'
     inputs:
@@ -70,7 +88,7 @@ jobs:
       Inline: |
         $apim = Get-AzApiManagement `
           -ResourceGroupName '${{ variables.resourceGroupName }}' `
-          -Name 'bushapp-apim'
+          -Name '${{ variables.apimName }}'
 
         $apimContext = New-AzApiManagementContext `
           -ResourceGroupName $apim.ResourceGroupName `
