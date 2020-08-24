@@ -12,6 +12,7 @@ variables:
   System.Debug: true
   buildConfiguration: 'Release'
   subscription: 'bushapp-subscription'
+  envSuffix: 'dev1'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -37,7 +38,7 @@ stages:
       workingDirectory: 'api/bushApp.api'
       displayName: 'install local project dotnet tools'
 
-    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --serializeasv2 --host 'https://bushapp-api.azurewebsites.net'  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
+    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --serializeasv2 --host 'https://bushapp-api-${{ variables.envSuffix }}.azurewebsites.net'  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
       workingDirectory: 'api/bushApp.api'
       displayName: 'generate swagger.json'
 
@@ -75,5 +76,5 @@ stages:
     parameters:
       azureSubscription: '$(subscription)'
       resourceGroupPrefix: 'bushapp-rg'
-      envSuffix: 'dev1'
+      envSuffix: '${{ variables.envSuffix }}'
 
