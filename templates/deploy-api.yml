@@ -50,32 +50,13 @@ jobs:
       deploymentOutputs: 'apiTemplateOutputs'
       overrideParameters: '-webAppName "${{ variables.apiName }}"'
 
-  - task: AzurePowerShell@4
-    displayName: Convert template outputs to variable
-    inputs:
-      azureSubscription: '${{ parameters.azureSubscription }}'
-      scriptType: 'InlineScript'
-      Inline: |
-        $outputs=ConvertFrom-Json '$(apiTemplateOutputs)'
-        Write-Host "##vso[task.setvariable variable=templateOutputs;]$outputs"
-      azurePowerShellVersion: 'latestVersion'
-      pwsh: true
-
-  - task: Bash@3
-    inputs:
-      targetType: 'inline'
-      script: |
-        # Write your commands here
-        echo '$(templateOutputs)'
-    displayName: display arm template variables 
-
   - task: AzureRmWebAppDeployment@4
     displayName: 'Deploy to linux Azure Web App'
     inputs:
       ConnectionType: 'AzureRM'
       azureSubscription: ${{ parameters.azureSubscription }}
       appType: 'webAppLinux'
-      WebAppName: 'bushapp-api'
+      WebAppName: '${{ variables.apiName }}'
       packageForLinux: '$(Pipeline.Workspace)/WebApp/**/*.zip'
       RuntimeStack: 'DOTNETCORE|3.1'
 
@@ -97,7 +78,7 @@ jobs:
 
         $api = Import-AzApiManagementApi `
           -Context $apimContext `
-          -ApiId 'bushapp-api' `
+          -ApiId '${{ variables.apiName }}' `
           -Path 'bushapp' `
           -SpecificationFormat 'Swagger' `
           -SpecificationPath '$(Pipeline.Workspace)/WebApp/swagger.json'
