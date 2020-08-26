@@ -101,5 +101,10 @@ jobs:
           -SpecificationFormat 'Swagger' `
           -SpecificationPath '$(Pipeline.Workspace)/WebApp/swagger.json'
 
+        Set-AzApiManagementPolicy `
+          -Context $apimContext 
+          -ApiId '${{ variables.apiName }}' ` 
+          -PolicyFilePath '$(Pipeline.Workspace)/ArmTemplates/api-policy.xml'
+
 
 

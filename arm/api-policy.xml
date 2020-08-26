@@ -1,0 +1,26 @@
+<policies>
+	<inbound>
+		<base />
+		<validate-jwt 
+            header-name="Authorization" 
+            failed-validation-httpcode="401" 
+            failed-validation-error-message="@((string)context.LastError.Message)" 
+            require-scheme="Bearer" require-signed-tokens="true">
+			<openid-config url="https://dev-bnklhbeb.au.auth0.com/.well-known/openid-configuration" />
+            <audiences>
+                <audience>oota-boota</audience>
+            </audiences>
+			<required-claims>
+				<claim name="permissions">
+                    <value>oota-write</value>
+				</claim>
+			</required-claims>
+		</validate-jwt>
+	</inbound>
+	<backend>
+		<base />
+	</backend>
+	<outbound>
+		<base />
+	</outbound>
+</policies>
