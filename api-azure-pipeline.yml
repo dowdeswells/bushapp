@@ -13,6 +13,9 @@ variables:
   buildConfiguration: 'Release'
   subscription: 'bushapp-subscription'
   envSuffix: 'dev1'
+  resourceGroupPrefix: 'bushapp-rg'
+  backendApiNamePrefix: 'bushapp-api'
+  backendApiUrl: 'https://${{ variables.backendApiNamePrefix }}-${{ variables.envSuffix }}.azurewebsites.net'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -34,24 +37,24 @@ stages:
       workingDirectory: 'api'
       displayName: 'dotnet build $(buildConfiguration)'
 
-    - script: dotnet tool restore
-      workingDirectory: 'api/bushApp.api'
-      displayName: 'install local project dotnet tools'
-
-    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --serializeasv2 --host 'https://bushapp-api-${{ variables.envSuffix }}.azurewebsites.net'  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
-      workingDirectory: 'api/bushApp.api'
-      displayName: 'generate swagger.json'
-
     - task: DotNetCoreCLI@2
-      displayName: "Test"
+      displayName: "Run first round of tests"
       inputs:
         workingDirectory: 'api/bushApp.api.test'
         command: test
         projects: '*.csproj'
-        arguments: '--configuration $(buildConfiguration)'
+        arguments: '--configuration $(buildConfiguration)'      
+
+    - script: dotnet tool restore
+      workingDirectory: 'api/bushApp.api'
+      displayName: 'install local project dotnet tools'
+
+    - script: dotnet swagger tofile --output '$(Build.ArtifactStagingDirectory)/swagger.json' --serializeasv2 --host '${{ variables.backendApiUrl }}'  './bin/$(buildConfiguration)/netcoreapp3.1/bushApp.api.dll' v1
+      workingDirectory: 'api/bushApp.api'
+      displayName: 'generate swagger.json in staging directory'
 
     - task: DotNetCoreCLI@2
-      displayName: "Dotnet Publish"
+      displayName: "Dotnet publish build output to staging directory"
       inputs:
         workingDirectory: 'api/bushApp.api'
         command: 'publish'
@@ -60,14 +63,14 @@ stages:
         zipAfterPublish: true
 
     - publish: '$(Build.ArtifactStagingDirectory)'
-      displayName: "Upload built api"
+      displayName: "Upload staging directory to pipeline artifact"
       artifact: WebApp  
       
     - publish: '$(Build.SourcesDirectory)/arm'
-      displayName: "Upload arm templates"
+      displayName: "Upload arm templates to pipeline artifact"
       artifact: ArmTemplates  
 
-- stage: deploy_to_test
+- stage: deploy
   dependsOn:
   - build_test_and_publish
 
@@ -75,6 +78,6 @@ stages:
   - template: templates/deploy-api.yml
     parameters:
       azureSubscription: '$(subscription)'
-      resourceGroupPrefix: 'bushapp-rg'
+      resourceGroupPrefix: '${{ variables.resourceGroupPrefix }}'
       envSuffix: '${{ variables.envSuffix }}'
 
