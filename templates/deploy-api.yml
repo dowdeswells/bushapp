@@ -103,7 +103,7 @@ jobs:
 
         Set-AzApiManagementPolicy `
           -Context $apimContext `
-          -ApiId '${{ variables.apiName }}' ` 
+          -ApiId '${{ variables.apiName }}' `
           -PolicyFilePath '$(Pipeline.Workspace)/ArmTemplates/api-policy.xml'
 
 
