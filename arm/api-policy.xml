@@ -4,8 +4,8 @@
 		<validate-jwt 
             header-name="Authorization" 
             failed-validation-httpcode="401" 
-            failed-validation-error-message="@((string)context.LastError.Message)" 
-            require-scheme="Bearer" require-signed-tokens="true" require-expiration-time="true">
+            require-scheme="Bearer" require-signed-tokens="true" require-expiration-time="true"
+            clock-skew="300">
 			<openid-config url="https://dev-bnklhbeb.au.auth0.com/.well-known/openid-configuration" />
             <audiences>
                 <audience>oota-boota</audience>
