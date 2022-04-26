@@ -8,7 +8,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: si-bush-app
-  AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
+  API_SLN_PATH: './api'
   DOTNET_VERSION: '3.1.x'           # set this to the dot net version to use
 
 jobs:
@@ -24,21 +24,21 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }} 
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: api
+      working-directory: ${{ env.API_SLN_PATH }} 
     - name: Build
       run: dotnet build --no-restore
-      working-directory: api
+      working-directory: ${{ env.API_SLN_PATH }}
     - name: Test
       run: dotnet test --no-build --verbosity normal
-      working-directory: api
+      working-directory: ${{ env.API_SLN_PATH }}
       
     # Run dotnet build and publish
     - name: dotnet build and publish
       run: |
           dotnet restore
           dotnet build --configuration Release
-          dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'       
-      working-directory: api
+          dotnet publish -c Release -o './published-app'       
+      working-directory: ${{ env.API_SLN_PATH }}
       
       # Deploy to Azure Web apps
     - name: 'Run Azure webapp deploy action using publish profile credentials'
@@ -46,6 +46,6 @@ jobs:
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }}
-        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'
+        package: '${{ env.API_SLN_PATH }}/published-app'
         
         
